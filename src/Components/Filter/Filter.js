@@ -1,7 +1,14 @@
-import propTypes from 'prop-types';
+// import propTypes from 'prop-types';
+import { useContacts } from '../hooks/useContacts';
 import s from './Filter.module.css';
 
-function Filter({ value, getfilterValue }) {
+function Filter() {
+  const {filterValue } = useContacts();
+  
+  const getfilterValue = e => {
+    filterValue(e.currentTarget.value);
+  };
+  
   return (
     <form>
       <label>
@@ -9,7 +16,7 @@ function Filter({ value, getfilterValue }) {
         <input
           className={s.Filter_input}
           type="text"
-          value={value}
+          // value={value}
           onChange={getfilterValue}
           placeholder="Enter something to start searching"
         />
@@ -18,9 +25,9 @@ function Filter({ value, getfilterValue }) {
   );
 }
 
-Filter.propTypes = {
-  value: propTypes.string.isRequired,
-  getfilterValue: propTypes.func.isRequired,
-};
+// Filter.propTypes = {
+//   value: propTypes.string.isRequired,
+//   getfilterValue: propTypes.func.isRequired,
+// };
 
 export default Filter;

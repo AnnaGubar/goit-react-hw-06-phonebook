@@ -1,16 +1,15 @@
+import { nanoid } from 'nanoid';
 import { useState } from 'react';
-import propTypes from 'prop-types';
+import { useContacts } from '../hooks/useContacts';
 import s from './ContactForm.module.css';
 
-function ContactForm({ createNewContact }) {
+function ContactForm() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
-  // отслеживает инпуты формы
-  const handleChange = e => {
-    // const { name, value } = e.currentTarget;
-    // this.setState({ [name]: value });
+  const { addContact, isContactExists } = useContacts();
 
+  const handleChange = e => {
     if (e.currentTarget.name === 'name') {
       setName(e.currentTarget.value);
     }
@@ -22,7 +21,20 @@ function ContactForm({ createNewContact }) {
   const handleSubmit = e => {
     e.preventDefault();
 
-    createNewContact(name, number);
+    const newContact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+
+    if (isContactExists(newContact)) {
+      console.log('уже есть, пропускаю');
+      alert(`${newContact.name} is already in contacts.`);
+      return;
+    }
+
+    console.log('новый, создаю');
+    addContact(newContact);
     reset();
   };
 
@@ -39,7 +51,7 @@ function ContactForm({ createNewContact }) {
           type="text"
           placeholder="Enter some name"
           name="name" // для паттерна обновления state
-          value={name} // для очистки инпута после submit
+          value={name} // e.currentTarget
           onChange={handleChange}
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
@@ -52,7 +64,7 @@ function ContactForm({ createNewContact }) {
           type="tel"
           placeholder="Enter phone number"
           name="number" // для паттерна обновления state
-          value={number} // для очистки инпута после submit
+          value={number} // e.currentTarget
           onChange={handleChange}
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
@@ -65,9 +77,4 @@ function ContactForm({ createNewContact }) {
     </form>
   );
 }
-
-ContactForm.propTypes = {
-  createNewContact: propTypes.func.isRequired,
-};
-
 export default ContactForm;
